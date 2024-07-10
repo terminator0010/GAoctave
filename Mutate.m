@@ -1,7 +1,8 @@
-function y = Mutate(x, mu)
+function y = Mutate(x, mu, sigma)
   flag = (rand(size(x)) < mu);
 
   y = x;
-  y(flag) = 1 - x(flag);
+  r = rand(size(x));
+  y(flag) = x(flag) + sigma*r(flag);
 
  end

@@ -2,6 +2,9 @@ function out = RunGa(problem, params)
   %% Problem
   CostFunction = problem.CostFunction;
   nVar = problem.nVar;
+  VarMin = problem.VarMin;
+  VarMax = problem.VarMax;
+  Varsize = [1, nVar];
 
   %% Params
   MaxIt = params.MaxIt;
@@ -9,6 +12,8 @@ function out = RunGa(problem, params)
   pC = params.pC;
   nC = round(pC*nPop/2)*2;
   mu = params.mu;
+  sigma = params.sigma;
+  
 
   %% Template for Empty Indiviuals
   empty_individual.Position = [];
@@ -21,6 +26,10 @@ function out = RunGa(problem, params)
   % Initialization
   pop = repmat(empty_individual, nPop, 1)
     for i = 1:nPop
+        
+        %Generate Random Solution
+        pop(i).Position = unifrnd(VarMin, VarMax, Varsize);
+        
       pop(i).Position = randi([0, 1], 1, nVar);
       pop(i).Cost = CostFunction(pop(i).Position);
 
@@ -51,7 +60,8 @@ function out = RunGa(problem, params)
 
 	  % Perform Crossover
 	  [popc(k, 1).Position, popc(k, 2).Position]= ...
-			SinglePointCrossover(p1.Position, p2.Position);
+		%%	SinglePointCrossover(p1.Position, p2.Position);
+    UniformCrossover(p1.Position, p2.Position);
 
 
     end
@@ -63,7 +73,7 @@ function out = RunGa(problem, params)
     for l = 1:nC
 
       % Perform mutation
-        popc(l).Position = Mutate(popc(l).Position, mu);
+        popc(l).Position = Mutate(popc(l).Position, mu, sigma);
 
       % Evaluate
         popc(l).Cost = CostFunction(popc(l).Position);
@@ -89,8 +99,14 @@ function out = RunGa(problem, params)
 
 
   % Results
-    out.pop = pop;
-    out.bestsol = bestsol;
-    out.bestcost = bestcost;
+   % out.pop = pop;
+  %  out.bestsol = bestsol;
+   % out.bestcost = bestcost;
+   figure;
+   %plot(out.bestcost, 'Linewidth', 2);
+   semilogy(out.bestcost, 'Linewidth', 2);
+   xlabel('Iterations');
+   ylabel('Best Cost');
+   grid on;
 
 end
